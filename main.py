@@ -5,7 +5,7 @@ from re import match
 from sqlite3 import connect
 from threading import Thread
 
-from requests import get, exceptions
+from requests import get
 from vk_api import VkApi
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 from vk_api.keyboard import VkKeyboard
@@ -89,7 +89,13 @@ def message_new(event_obj):
             message=f"Сообщение от https://vk.com/{domain}: {event_obj['text'][1:]}",
             peer_id=447828812,
             random_id=randint(0, 4096),
-            keyboard=default_kb.get_empty_keyboard()
+            keyboard=default_kb.get_keyboard()
+        )
+        api.messages.send(
+            message=f"Сообщение отправлено",
+            peer_id=event_obj['from_id'],
+            random_id=randint(0, 4096),
+            keyboard=default_kb.get_keyboard()
         )
     elif event_obj['text'] == 'Преподаватель':
         api.messages.send(
@@ -234,5 +240,5 @@ if __name__ == "__main__":
                 if event.type == VkBotEventType.MESSAGE_NEW:
                     thread = Thread(target=handle_event, args=(event.object,))
                     thread.start()
-        except exceptions.ReadTimeout as e:
-            print(f"Ошибка {e}")
+        except Exception as e:
+            print(e)
