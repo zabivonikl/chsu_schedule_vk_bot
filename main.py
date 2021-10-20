@@ -43,7 +43,7 @@ def get_schedule(from_id, start_date, last_date=None):
             current_date = elem['dateEvent']
             iterator += 1
             resp.append(f'\n=====Расписание на {current_date}=====\n')
-        resp[iterator] += f"{elem['startTime']}-{elem['endTime']} {elem['dateEvent']}\n"
+        resp[iterator] += f"{elem['startTime']}-{elem['endTime']}\n"
         resp[iterator] += f"{elem['abbrlessontype'] or ''}., {elem['discipline']['title']}\n"
         if id_type == 'student':
             for prof in elem['lecturers']:
