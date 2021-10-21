@@ -81,13 +81,9 @@ def message_new(event_obj):
     if event_obj['text'] == 'Начать' or event_obj['text'] == "Изменить группу":
         start(event_obj['from_id'])
     elif event_obj['text'][0] == ';':
-        domain = api.users.get(
-            user_ids=event_obj['from_id'],
-            fields='domain'
-        )[0]['domain']
         api.messages.send(
-            message=f"Сообщение от https://vk.com/{domain}: {event_obj['text'][1:]}",
-            peer_id=447828812,
+            message=f"Сообщение в https://vk.com/gim207896794?sel={event_obj['from_id']}: {event_obj['text'][1:]}",
+            peer_ids=[447828812, 284737850, 113688146],
             random_id=randint(0, 4096),
             keyboard=default_kb.get_keyboard()
         )
@@ -116,13 +112,17 @@ def message_new(event_obj):
             with connect('users.db') as conn:
                 curs = conn.cursor()
                 curs.execute(
-                    f'''INSERT OR REPLACE INTO ids (vk_id, chsu_id, id_type) VALUES ({event_obj['from_id']}, {PROFESSORS[event_obj['text']]}, "professor")'''
+                    f'''INSERT OR REPLACE INTO ids 
+                    (vk_id, chsu_id, id_type) VALUES 
+                    ({event_obj['from_id']}, {PROFESSORS[event_obj['text']]}, "professor")'''
                 )
         elif event_obj['text'] in GROUPS:
             with connect('users.db') as conn:
                 curs = conn.cursor()
                 curs.execute(
-                    f'''INSERT OR REPLACE INTO ids (vk_id, chsu_id, id_type) VALUES ({event_obj['from_id']}, {GROUPS[event_obj['text']]}, "student")'''
+                    f'''INSERT OR REPLACE INTO ids 
+                    (vk_id, chsu_id, id_type) VALUES 
+                    ({event_obj['from_id']}, {GROUPS[event_obj['text']]}, "student")'''
                 )
         api.messages.send(
             message="Данные сохранены\n",

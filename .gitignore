@@ -132,3 +132,4 @@ dmypy.json
 tokens.py
 /.idea
 users.db
+.bash_history
