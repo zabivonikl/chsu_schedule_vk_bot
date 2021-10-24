@@ -163,7 +163,7 @@ def message_new(event_obj):
         )
     elif match(r'\d\d[.]\d\d[-]\d\d[.]\d\d', event_obj['text']):
         start_time = event_obj['text'].split('-')[0] + f".{datetime.now().year}"
-        if event_obj['text'].split('-')[0] > event_obj['text'].split('-')[1]:
+        if event_obj['text'].split('-')[0][2:3] > event_obj['text'].split('-')[1][2:3]:
             end_time = event_obj['text'].split('-')[1] + f".{datetime.now().year + 1}"
         else:
             end_time = event_obj['text'].split('-')[1] + f".{datetime.now().year}"
