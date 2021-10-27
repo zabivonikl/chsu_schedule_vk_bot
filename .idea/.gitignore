@@ -11,3 +11,4 @@
 ../tokens.py
 /*
 ../users.db
+../.gitignore

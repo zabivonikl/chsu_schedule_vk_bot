@@ -1,16 +1,15 @@
 from datetime import datetime, timedelta
-from json import loads
 from random import randint
 from re import match
 from sqlite3 import connect
 from threading import Thread
 
-from requests import get
 from vk_api import VkApi
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 from vk_api.keyboard import VkKeyboard
 
 from id_lists import *
+from site_schedule import SiteSchedule
 from tokens import VK_API, GROUP_ID
 
 
@@ -19,43 +18,13 @@ def get_schedule(from_id, start_date, last_date=None):
         curs = conn.cursor()
         curs.execute(f"SELECT * FROM ids WHERE vk_id='{from_id}'")
         res = curs.fetchone()
-    chsu_id = res[1]
-    id_type = res[2]
-
-    url = 'https://www.chsu.ru/raspisanie?p_p_id=TimeTable_WAR_TimeTableportlet&p_p_lifecycle=2&p_p_state=normal' \
-          '&p_p_mode=view&p_p_cacheability=cacheLevelPage&p_p_col_id=column-1&p_p_col_count=1'
-    payload = {
-        "_TimeTable_WAR_TimeTableportlet_cmd": "timeTable",
-        "_TimeTable_WAR_TimeTableportlet_typeTimeTable": "period",
-        "_TimeTable_WAR_TimeTableportlet_group": chsu_id,
-        "_TimeTable_WAR_TimeTableportlet_type": id_type,
-        "_TimeTable_WAR_TimeTableportlet_startDate": start_date,
-        "_TimeTable_WAR_TimeTableportlet_endDate": last_date or start_date,
-        "_TimeTable_WAR_TimeTableportlet_professor": chsu_id
+    params = {
+        "university_id": res[1],
+        "id_type": res[2],
+        "start_date": start_date,
+        "last_date": last_date
     }
-    resp = get(url, params=payload)
-    js = loads(resp.text)
-    resp = []
-    current_date = ""
-    iterator = -1
-    for elem in js:
-        if current_date != elem['dateEvent']:
-            current_date = elem['dateEvent']
-            iterator += 1
-            resp.append(f'\n=====Расписание на {current_date}=====\n')
-        resp[iterator] += f"{elem['startTime']}-{elem['endTime']}\n"
-        resp[iterator] += f"{elem['abbrlessontype'] or ''}., {elem['discipline']['title']}\n"
-        if id_type == 'student':
-            for prof in elem['lecturers']:
-                resp[iterator] += f"{prof['fio']}, "
-        else:
-            for group in elem['groups']:
-                resp[iterator] += f"{group['title']}, "
-        resp[iterator] = resp[iterator][:-2] + '\n'
-        resp[iterator] += f"{elem['build']['title']}, аудитория {elem['auditory']['title']}\n" if elem['online'] == 0 \
-            else "Онлайн\n"
-        resp[iterator] += "\n"
-    return resp or ["На текущий промежуток времени расписание не найдено\n"]
+    return schedule.get_schedule_string_array(params)
 
 
 def start(peer_id):
@@ -233,7 +202,7 @@ if __name__ == "__main__":
         label="Изменить группу",
         color="negative"
     )
-
+    schedule = SiteSchedule()
     while True:
         try:
             for event in VkBotLongPoll(session, GROUP_ID).listen():
