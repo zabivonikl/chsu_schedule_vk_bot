@@ -11,6 +11,10 @@ class Vk:
         self.session = VkApi(token=VK_API, client_secret=VK_API)
         self.api = self.session.get_api()
 
+    def send_message_queue(self, queue, peer_ids, keyboard):
+        for element in queue:
+            self.send_message(element, peer_ids, keyboard)
+
     def send_message(self, message, peer_ids, keyboard):
         self.api.messages.send(
             message=message,
