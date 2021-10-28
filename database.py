@@ -19,5 +19,5 @@ class Database:
         with connect(self.path) as conn:
             curs = conn.cursor()
             curs.execute(
-                f'''INSERT OR REPLACE INTO ids (vk_id, chsu_id, id_type) VALUES ({vk_id}, {university_id}, {role})'''
+                f'''INSERT OR REPLACE INTO ids (vk_id, chsu_id, id_type) VALUES ({vk_id}, {university_id}, "{role}")'''
             )
