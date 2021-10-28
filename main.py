@@ -1,26 +1,23 @@
 from datetime import datetime, timedelta
 from random import randint
 from re import match
-from sqlite3 import connect
 from threading import Thread
 
 from vk_api import VkApi
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 from vk_api.keyboard import VkKeyboard
 
+from database import Database
 from id_lists import *
 from site_schedule import SiteSchedule
 from tokens import VK_API, GROUP_ID
 
 
 def get_schedule(from_id, start_date, last_date=None):
-    with connect('users.db') as conn:
-        curs = conn.cursor()
-        curs.execute(f"SELECT * FROM ids WHERE vk_id='{from_id}'")
-        res = curs.fetchone()
+    db_response = database.get_user_data(from_id)
     params = {
-        "university_id": res[1],
-        "id_type": res[2],
+        "university_id": db_response["university_id"],
+        "id_type": db_response["id_type"],
         "start_date": start_date,
         "last_date": last_date
     }
@@ -78,21 +75,17 @@ def message_new(event_obj):
         )
     elif event_obj['text'] in GROUPS or event_obj['text'] in PROFESSORS:
         if event_obj['text'] in PROFESSORS:
-            with connect('users.db') as conn:
-                curs = conn.cursor()
-                curs.execute(
-                    f'''INSERT OR REPLACE INTO ids 
-                    (vk_id, chsu_id, id_type) VALUES 
-                    ({event_obj['from_id']}, {PROFESSORS[event_obj['text']]}, "professor")'''
-                )
+            database.set_user_data(
+                event_obj['from_id'],
+                PROFESSORS[event_obj['text']],
+                "professor"
+            )
         elif event_obj['text'] in GROUPS:
-            with connect('users.db') as conn:
-                curs = conn.cursor()
-                curs.execute(
-                    f'''INSERT OR REPLACE INTO ids 
-                    (vk_id, chsu_id, id_type) VALUES 
-                    ({event_obj['from_id']}, {GROUPS[event_obj['text']]}, "student")'''
-                )
+            database.set_user_data(
+                event_obj['from_id'],
+                GROUPS[event_obj['text']],
+                "student"
+            )
         api.messages.send(
             message="Данные сохранены\n",
             peer_id=event_obj['from_id'],
@@ -202,6 +195,8 @@ if __name__ == "__main__":
         label="Изменить группу",
         color="negative"
     )
+
+    database = Database()
     schedule = SiteSchedule()
     while True:
         try:

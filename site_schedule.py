@@ -17,25 +17,27 @@ class SiteSchedule:
             "_TimeTable_WAR_TimeTableportlet_typeTimeTable": "period"
         }
 
-    def get_schedule_string_array(self, user_data):
-        self.__set_request_params(user_data)
+    def get_schedule_string_array(self, request_parameters):
+        self.__set_request_params(request_parameters)
         self.__get_response_json()
-        return self.__parse_json(user_data["id_type"]) or self.__get_empty_response()
+        return self.__parse_json(request_parameters["id_type"]) or self.__get_empty_response()
 
-    def __set_request_params(self, user_data):
+    def __set_request_params(self, request_parameters):
         self.params = {
             **self.params,
-            "_TimeTable_WAR_TimeTableportlet_group": user_data["university_id"],
-            "_TimeTable_WAR_TimeTableportlet_type": user_data["id_type"],
-            "_TimeTable_WAR_TimeTableportlet_startDate": user_data["start_date"],
-            "_TimeTable_WAR_TimeTableportlet_endDate": user_data["last_date"] or user_data["start_date"],
-            "_TimeTable_WAR_TimeTableportlet_professor": user_data["university_id"]
+            "_TimeTable_WAR_TimeTableportlet_group": request_parameters["university_id"],
+            "_TimeTable_WAR_TimeTableportlet_type": request_parameters["id_type"],
+            "_TimeTable_WAR_TimeTableportlet_startDate": request_parameters["start_date"],
+            "_TimeTable_WAR_TimeTableportlet_endDate": request_parameters["last_date"] or request_parameters[
+                "start_date"],
+            "_TimeTable_WAR_TimeTableportlet_professor": request_parameters["university_id"]
         }
 
     def __get_response_json(self):
         resp = get(self.url, params=self.params)
         self.response_json = loads(resp.text)
 
+    # TODO сделать человеческую итерацию по дням
     def __parse_json(self, id_type):
         resp = []
         current_date = ""
