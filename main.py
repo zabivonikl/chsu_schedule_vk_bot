@@ -1,8 +1,8 @@
 from threading import Thread
 
-from database import Database
-from event_handler import EventHandler
-from vk import Vk
+from MembersDataAndUniversityIds.database import Database
+from VkBot.event_handler import VkEventHandler
+from VkBot.vk import Vk
 
 
 def handle_event(event_obj):
@@ -13,7 +13,7 @@ def handle_event(event_obj):
 if __name__ == "__main__":
     vk = Vk()
     database = Database()
-    event_handler = EventHandler(vk, database)
+    event_handler = VkEventHandler(vk, database)
     while True:
         try:
             event = vk.listen_server()

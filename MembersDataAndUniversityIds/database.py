@@ -3,7 +3,7 @@ from sqlite3 import connect
 
 class Database:
     def __init__(self):
-        self.__path = 'users.db'
+        self.__path = 'MembersDataAndUniversityIds/users.db'
 
     def get_user_data(self, vk_id):
         with connect(self.__path) as conn:

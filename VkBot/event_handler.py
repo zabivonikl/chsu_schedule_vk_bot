@@ -3,11 +3,11 @@ from re import match
 
 from vk_api.keyboard import VkKeyboard
 
-from id_lists import GROUPS, PROFESSORS
-from site_schedule import SiteSchedule
+from MembersDataAndUniversityIds.id_lists import GROUPS, PROFESSORS
+from ScheduleSources.site_schedule import SiteSchedule
 
 
-class EventHandler:
+class VkEventHandler:
     def __init__(self, vk, database):
         self.__vk = vk
         self.__database = database

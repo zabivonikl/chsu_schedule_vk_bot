@@ -3,12 +3,12 @@ from random import randint
 from vk_api import VkApi
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 
-from tokens import VK_API, GROUP_ID
+import VkBot.tokens as tokens
 
 
 class Vk:
     def __init__(self):
-        self.__session = VkApi(token=VK_API, client_secret=VK_API)
+        self.__session = VkApi(token=tokens.VK_API, client_secret=tokens.VK_API)
         self.__api = self.__session.get_api()
 
     def send_message_queue(self, queue, peer_ids, keyboard):
@@ -24,6 +24,6 @@ class Vk:
         )
 
     def listen_server(self):
-        for event in VkBotLongPoll(self.__session, GROUP_ID).listen():
+        for event in VkBotLongPoll(self.__session, tokens.GROUP_ID).listen():
             if event.type == VkBotEventType.MESSAGE_NEW:
                 return event.object
