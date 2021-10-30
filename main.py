@@ -15,6 +15,7 @@ def handle_event(event_obj):
         )
 
 
+# TODO сделать рассылку
 if __name__ == "__main__":
     vk = Vk()
     event_handler = EventHandler(vk)

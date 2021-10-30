@@ -20,7 +20,8 @@ class SiteSchedule:
     def get_schedule_string_array(self, request_parameters):
         self.__set_request_params(request_parameters)
         self.__get_response_json()
-        return self.__parse_json(request_parameters["id_type"]) or self.__get_empty_response()
+        self.__parse_json(request_parameters["id_type"])
+        return self.__response or self.__get_empty_response()
 
     def __set_request_params(self, request_parameters):
         self.params = {
@@ -35,49 +36,58 @@ class SiteSchedule:
 
     def __get_response_json(self):
         resp = get(self.url, params=self.params)
-        self.response_json = loads(resp.text)
+        self.__response_json = loads(resp.text)
 
-    # TODO сделать человеческую итерацию по дням
     def __parse_json(self, id_type):
-        resp = []
-        current_date = ""
-        iterator = -1
-        self.lesson = {}
-        for self.lesson in self.response_json:
-            if current_date != self.lesson['dateEvent']:
-                current_date = self.lesson['dateEvent']
-                iterator += 1
-                resp.append(f'\n=====Расписание на {current_date}=====\n')
-            resp[iterator] += self.__get_lesson_time()
-            resp[iterator] += self.__get_discipline_string()
-            resp[iterator] += self.__get_professors_names() if id_type == 'student' else self.__get_groups_names()
-            resp[iterator] += self.__get_location()
-            resp[iterator] += "\n"
-        return resp
+        self.__response = []
+        self.__current_date = ""
+        self.__lesson = {}
+        for self.__lesson in self.__response_json:
+            self.__split_if_another_day()
+            self.__add_lesson_to_string(id_type)
+
+    def __split_if_another_day(self):
+        if not self.__is_current_date():
+            self.__update_current_and_add_day()
+
+    def __is_current_date(self):
+        return self.__current_date == self.__lesson['dateEvent']
+
+    def __update_current_and_add_day(self):
+        self.__current_date = self.__lesson['dateEvent']
+        self.__response.append(f'\n=====Расписание на {self.__current_date}=====\n')
+
+    def __add_lesson_to_string(self, id_type):
+        self.__response[len(self.__response) - 1] += self.__get_lesson_time()
+        self.__response[len(self.__response) - 1] += self.__get_discipline_string()
+        self.__response[len(self.__response) - 1] += self.__get_professors_names() if id_type == 'student' \
+            else self.__get_groups_names()
+        self.__response[len(self.__response) - 1] += self.__get_location()
+        self.__response[len(self.__response) - 1] += "\n"
 
     def __get_lesson_time(self):
-        return f"{self.lesson['startTime']}-{self.lesson['endTime']}\n"
+        return f"{self.__lesson['startTime']}-{self.__lesson['endTime']}\n"
 
     def __get_discipline_string(self):
-        return f"{self.lesson['abbrlessontype'] or ''}., {self.lesson['discipline']['title']}\n"
+        return f"{self.__lesson['abbrlessontype'] or ''}., {self.__lesson['discipline']['title']}\n"
 
     def __get_professors_names(self):
         response = ""
-        for professor in self.lesson['lecturers']:
+        for professor in self.__lesson['lecturers']:
             response += f"{professor['fio']}, "
         return response[:-2] + "\n"
 
     def __get_groups_names(self):
         response = ""
-        for group in self.lesson['groups']:
+        for group in self.__lesson['groups']:
             response += f"{group['title']}, "
         return response[:-2] + "\n"
 
     def __get_location(self):
-        return "Онлайн\n" if self.lesson['online'] == 1 else self.__get_address()
+        return "Онлайн\n" if self.__lesson['online'] == 1 else self.__get_address()
 
     def __get_address(self):
-        return f"{self.lesson['build']['title']}, аудитория {self.lesson['auditory']['title']}\n"
+        return f"{self.__lesson['build']['title']}, аудитория {self.__lesson['auditory']['title']}\n"
 
     @staticmethod
     def __get_empty_response():
