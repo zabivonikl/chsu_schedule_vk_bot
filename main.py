@@ -1,24 +1,19 @@
 from threading import Thread
 
+from database import Database
 from event_handler import EventHandler
 from vk import Vk
 
 
 def handle_event(event_obj):
-    try:
-        event_handler.handle_event(event_obj)
-    except TypeError:
-        api.messages.send(
-            message="Ошибка ввода. Проверьте правильность ввода даты\n",
-            peer_id=event_obj['from_id'],
-            random_id=randint(0, 4096)
-        )
+    event_handler.handle_event(event_obj)
 
 
 # TODO сделать рассылку
 if __name__ == "__main__":
     vk = Vk()
-    event_handler = EventHandler(vk)
+    database = Database()
+    event_handler = EventHandler(vk, database)
     while True:
         try:
             event = vk.listen_server()

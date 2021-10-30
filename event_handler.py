@@ -3,15 +3,14 @@ from re import match
 
 from vk_api.keyboard import VkKeyboard
 
-from database import Database
 from id_lists import GROUPS, PROFESSORS
 from site_schedule import SiteSchedule
 
 
 class EventHandler:
-    def __init__(self, vk):
+    def __init__(self, vk, database):
         self.vk = vk
-        self.database = Database()
+        self.database = database
         self.schedule = SiteSchedule()
 
         self.__get_standard_keyboard()
