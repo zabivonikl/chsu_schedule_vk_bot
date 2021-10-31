@@ -4,7 +4,7 @@ from vk_api import VkApi
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 from vk_api.keyboard import VkKeyboard
 
-import VkBot.tokens as tokens
+import tokens as tokens
 
 
 class Vk:

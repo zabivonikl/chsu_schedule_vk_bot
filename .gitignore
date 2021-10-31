@@ -129,8 +129,7 @@ dmypy.json
 .pyre/
 
 
-VkBot/tokens.py
+tokens.py
 /.idea
 MembersDataAndUniversityIds/users.db
 .bash_history
-TelegramBot/token.py
