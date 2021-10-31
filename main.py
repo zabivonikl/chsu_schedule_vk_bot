@@ -19,7 +19,7 @@ def listen_vk_server():
 
 
 def handle_telegram_event(event_obj):
-    telegram_api.send_message(event_obj, [event_obj["from_id"]])
+    EventHandler(telegram_api, database).handle_event(event_obj)
 
 
 def listen_telegram_server():

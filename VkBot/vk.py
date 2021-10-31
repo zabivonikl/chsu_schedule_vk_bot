@@ -57,6 +57,10 @@ class Vk:
     def get_empty_keyboard():
         return VkKeyboard.get_empty_keyboard()
 
+    @staticmethod
+    def get_api_name():
+        return "vk"
+
     def send_message_queue(self, queue, peer_ids, keyboard):
         for element in queue:
             self.send_message(element, peer_ids, keyboard)

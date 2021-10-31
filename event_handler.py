@@ -56,9 +56,18 @@ class EventHandler:
 
     def __set_university_id(self, university_id, from_id):
         if university_id in PROFESSORS:
-            self.__database.set_user_data(from_id, PROFESSORS[university_id], "professor")
+            self.__database.set_user_data(
+                from_id,
+                PROFESSORS[university_id],
+                "professor",
+                self.__chat_platform.get_api_name())
         elif university_id in GROUPS:
-            self.__database.set_user_data(from_id, GROUPS[university_id], "student")
+            self.__database.set_user_data(
+                from_id,
+                GROUPS[university_id],
+                "student",
+                self.__chat_platform.get_api_name()
+            )
         self.__chat_platform.send_message("Данные сохранены\n", [from_id], self.__standard_kb)
 
     def __handle_custom_date(self, from_id, start_date, end_date=None):
@@ -80,7 +89,7 @@ class EventHandler:
         return [start_date, end_date]
 
     def __get_schedule(self, from_id, start_date, last_date=None):
-        db_response = self.__database.get_user_data(from_id)
+        db_response = self.__database.get_user_data(from_id, self.__chat_platform.get_api_name())
         params = {
             "university_id": db_response["university_id"],
             "id_type": db_response["id_type"],

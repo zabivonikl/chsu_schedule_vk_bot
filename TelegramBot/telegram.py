@@ -17,8 +17,25 @@ class Telegram:
         return self.__call_method("getMe")
 
     @staticmethod
+    def get_api_name():
+        return "telegram"
+
+    @staticmethod
     def get_admins():
         return [672743407]
+
+    # todo сделать кнопки
+    @staticmethod
+    def get_standard_keyboard():
+        return None
+
+    @staticmethod
+    def get_start_keyboard():
+        return None
+
+    @staticmethod
+    def get_empty_keyboard():
+        return None
 
     def listen_server(self):
         while True:
