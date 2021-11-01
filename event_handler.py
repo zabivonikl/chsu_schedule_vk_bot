@@ -12,9 +12,9 @@ class EventHandler:
         self.__schedule = ScheduleParser()
         self.__chsu_api = ChsuApi()
 
-        self.__standard_kb = api.get_standard_keyboard()
-        self.__start_keyboard = api.get_start_keyboard()
-        self.__empty_kb = api.get_empty_keyboard()
+        self.__standard_kb = self.__chat_platform.get_standard_keyboard()
+        self.__start_keyboard = self.__chat_platform.get_start_keyboard()
+        self.__empty_kb = self.__chat_platform.get_empty_keyboard()
 
         self.__professors = self.__chsu_api.get_professors_list()
         self.__groups = self.__chsu_api.get_groups_list()
@@ -23,7 +23,7 @@ class EventHandler:
         from_id = event_obj['from_id']
         text = event_obj['text']
 
-        if text == 'Начать' or text == "Изменить группу":
+        if text == 'Начать' or text == "Изменить группу" or text == "/start":
             self.__send_start_message(from_id)
         elif text[0] == ';':
             self.__send_message_to_admins(text[1:], from_id)
@@ -50,7 +50,7 @@ class EventHandler:
                                               self.__empty_kb)
 
     def __send_start_message(self, from_id):
-        self.__chat_platform.send_message("Кто вы?", [from_id], self.__standard_kb)
+        self.__chat_platform.send_message("Кто вы?", [from_id], self.__start_keyboard)
 
     def __send_message_to_admins(self, message, from_id):
         self.__chat_platform.send_message(

@@ -1,5 +1,7 @@
 import requests
 
+from telegram import KeyboardButton, ReplyKeyboardMarkup
+
 
 class Telegram:
     def __init__(self, token=None):
@@ -24,18 +26,33 @@ class Telegram:
     def get_admins():
         return [672743407]
 
-    # todo сделать кнопки
     @staticmethod
     def get_standard_keyboard():
-        return None
+        keyboard = [
+            [
+                KeyboardButton("Расписание на сегодня"),
+                KeyboardButton("Расписание на завтра"),
+            ],
+            [KeyboardButton("Расписание на другой день")],
+            [KeyboardButton("Изменить группу")],
+        ]
+        reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+        return reply_markup.to_json()
 
     @staticmethod
     def get_start_keyboard():
-        return None
+        keyboard = [
+            [KeyboardButton("Студент")],
+            [KeyboardButton("Преподаватель")],
+        ]
+        reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
+        return reply_markup.to_json()
 
     @staticmethod
     def get_empty_keyboard():
-        return None
+        keyboard = []
+        reply_markup = ReplyKeyboardMarkup(keyboard)
+        return reply_markup.to_json()
 
     def listen_server(self):
         while True:
