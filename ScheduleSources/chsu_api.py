@@ -16,11 +16,11 @@ class ChsuApi:
 
     def __set_new_token(self):
         data = {"password": "ds3m#2nn", "username": "mobil"}
-        self.__base_headers["Authorization"] = requests.post(
+        self.__base_headers["Authorization"] = f'''Bearer {requests.post(
             self.__base_url + "/auth/signin",
             json=data,
             headers=self.__base_headers
-        ).json()["data"]
+        ).json()["data"]}'''
 
     @staticmethod
     def __simplify_teachers_list(teachers_list):
