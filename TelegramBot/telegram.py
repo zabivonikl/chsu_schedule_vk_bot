@@ -1,6 +1,6 @@
-import requests
+import json
 
-from telegram import KeyboardButton, ReplyKeyboardMarkup
+import requests
 
 
 class Telegram:
@@ -28,31 +28,39 @@ class Telegram:
 
     @staticmethod
     def get_standard_keyboard():
-        keyboard = [
-            [
-                KeyboardButton("Расписание на сегодня"),
-                KeyboardButton("Расписание на завтра"),
-            ],
-            [KeyboardButton("Расписание на другой день")],
-            [KeyboardButton("Изменить группу")],
-        ]
-        reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-        return reply_markup.to_json()
+        keyboard = {
+            'resize_keyboard': True,
+            'one_time_keyboard': True,
+            'keyboard': [
+                [
+                    {'text': 'Расписание на сегодня'},
+                    {'text': 'Расписание на завтра'}
+                ], [
+                    {'text': 'Расписание на другой день'}
+                ], [
+                    {'text': 'Изменить группу'}
+                ]],
+            'selective': False
+        }
+        return json.dumps(keyboard)
 
     @staticmethod
     def get_start_keyboard():
-        keyboard = [
-            [KeyboardButton("Студент")],
-            [KeyboardButton("Преподаватель")],
-        ]
-        reply_markup = ReplyKeyboardMarkup(keyboard, resize_keyboard=True)
-        return reply_markup.to_json()
+        keyboard = {
+            'resize_keyboard': True,
+            'one_time_keyboard': True,
+            'keyboard': [
+                [
+                    {'text': 'Студент'},
+                    {'text': 'Преподаватель'}
+                ]],
+            'selective': False
+        }
+        return json.dumps(keyboard)
 
     @staticmethod
     def get_empty_keyboard():
-        keyboard = []
-        reply_markup = ReplyKeyboardMarkup(keyboard)
-        return reply_markup.to_json()
+        return None
 
     def listen_server(self):
         while True:
