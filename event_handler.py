@@ -117,7 +117,7 @@ class EventHandler:
             return ['Что-то пошло не так. Вероятно, не работает сайт ЧГУ.']
 
     def __delete_mailing_time(self, from_id):
-        self.__database.delete_mailing_time(from_id, self.__chat_platform.get_api_name())
+        self.__database.update_mailing_time(from_id, self.__chat_platform.get_api_name())
         self.__chat_platform.send_message(
             f"Вы отписались от рассылки.",
             [from_id],
@@ -126,7 +126,7 @@ class EventHandler:
 
     def __set_mailing_time(self, from_id, text):
         time = text if int(text.split(":")[0]) < 24 else "09:00"
-        self.__database.add_mailing_time(from_id, self.__chat_platform.get_api_name(), time)
+        self.__database.update_mailing_time(from_id, self.__chat_platform.get_api_name(), f"\"{time}\"")
         self.__chat_platform.send_message(
             f"Вы подписались на рассылку расписания."
             f" Теперь, ежедневно в {time}, вы будете получать расписание на следующий день.",

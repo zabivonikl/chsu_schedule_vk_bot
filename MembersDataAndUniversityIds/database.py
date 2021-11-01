@@ -23,16 +23,9 @@ class Database:
                  ({id}, {university_id}, "{role}", "{api_name}")'''
             )
 
-    def add_mailing_time(self, user_id, platform_name, time):
+    def update_mailing_time(self, user_id, platform_name, time="null"):
         with connect(self.__path) as conn:
             curs = conn.cursor()
             curs.execute(
-                f'''UPDATE ids SET (mailing_time)=("{time}") WHERE id={user_id} AND platform="{platform_name}"'''
-            )
-
-    def delete_mailing_time(self, user_id, platform_name):
-        with connect(self.__path) as conn:
-            curs = conn.cursor()
-            curs.execute(
-                f'''UPDATE ids SET (mailing_time)=(null) WHERE id={user_id} AND platform="{platform_name}"'''
+                f'''UPDATE ids SET (mailing_time)=({time}) WHERE id={user_id} AND platform="{platform_name}"'''
             )
