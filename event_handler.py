@@ -45,6 +45,12 @@ class EventHandler:
             self.__handle_custom_date(from_id, text.split('-')[0], text.split('-')[1])
         elif match(r'\d\d[.]\d\d', text):
             self.__handle_custom_date(from_id, text)
+        elif text == "Рассылка":
+            self.__send_mailing_info(from_id)
+        elif text == "Отписаться":
+            self.__delete_mailing_time(from_id)
+        elif match(r'[0-2][0-9][:][0-5][0-9]', text):
+            self.__set_mailing_time(from_id, text)
         else:
             self.__chat_platform.send_message("Такой команды нет. Проверьте правильность ввода.", [from_id],
                                               self.__empty_kb)
@@ -109,3 +115,26 @@ class EventHandler:
         except Exception as err:
             print(err)
             return ['Что-то пошло не так. Вероятно, не работает сайт ЧГУ.']
+
+    def __delete_mailing_time(self, from_id):
+        self.__database.delete_mailing_time(from_id, self.__chat_platform.get_api_name())
+        self.__chat_platform.send_message(
+            f"Вы отписались от рассылки.",
+            [from_id],
+            self.__standard_kb
+        )
+
+    def __set_mailing_time(self, from_id, text):
+        time = text if int(text.split(":")[0]) < 24 else "09:00"
+        self.__database.add_mailing_time(from_id, self.__chat_platform.get_api_name(), time)
+        self.__chat_platform.send_message(
+            f"Вы подписались на рассылку расписания."
+            f" Теперь, ежедневно в {time}, вы будете получать расписание на следующий день.",
+            [from_id],
+            self.__standard_kb
+        )
+
+    def __send_mailing_info(self, from_id):
+        self.__chat_platform.send_message(
+            "Введите время рассылки\nПример: 20:35\n\nДля отписки напишите \"Отписаться\" (соблюдая регистр).",
+            [from_id], self.__empty_kb)

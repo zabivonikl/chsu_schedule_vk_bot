@@ -15,9 +15,24 @@ class Database:
             "id_type": response[2]
         }
 
-    def set_user_data(self, vk_id, university_id, role, api_name):
+    def set_user_data(self, id, university_id, role, api_name):
         with connect(self.__path) as conn:
             curs = conn.cursor()
             curs.execute(
-                f'''INSERT OR REPLACE INTO ids (id, chsu_id, id_type, platform) VALUES ({vk_id}, {university_id}, "{role}", "{api_name}")'''
+                f'''INSERT OR REPLACE INTO ids (id, chsu_id, id_type, platform) VALUES
+                 ({id}, {university_id}, "{role}", "{api_name}")'''
+            )
+
+    def add_mailing_time(self, user_id, platform_name, time):
+        with connect(self.__path) as conn:
+            curs = conn.cursor()
+            curs.execute(
+                f'''UPDATE ids SET (mailing_time)=("{time}") WHERE id={user_id} AND platform="{platform_name}"'''
+            )
+
+    def delete_mailing_time(self, user_id, platform_name):
+        with connect(self.__path) as conn:
+            curs = conn.cursor()
+            curs.execute(
+                f'''UPDATE ids SET (mailing_time)=(null) WHERE id={user_id} AND platform="{platform_name}"'''
             )
