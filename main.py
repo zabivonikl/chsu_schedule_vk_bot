@@ -13,9 +13,12 @@ def handle_vk_event(event_obj):
 
 def listen_vk_server():
     while True:
-        event = vk_api.listen_server()
-        vk_event_handling = Thread(target=handle_vk_event, args=(event,))
-        vk_event_handling.start()
+        try:
+            event = vk_api.listen_server()
+            vk_event_handling = Thread(target=handle_vk_event, args=(event,))
+            vk_event_handling.start()
+        except Exception as err:
+            print(err)
 
 
 def handle_telegram_event(event_obj):
