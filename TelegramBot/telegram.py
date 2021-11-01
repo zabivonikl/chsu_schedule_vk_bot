@@ -59,11 +59,11 @@ class Telegram:
             self.__get_event()
             if self.__is_last_update_empty():
                 self.__init_last_update()
-            if self.__is_new_last_id():
+            elif self.__is_new_last_id():
                 return self.__update_last_id_and_get_event()
 
     def __get_event(self):
-        self.__event = self.__call_method("getUpdates")
+        self.__event = self.__call_method("getUpdates", {"offset": self.__last_update})
 
     def __call_method(self, method_name, params=None):
         return requests.get(self.__bot_link + method_name, params=params).json()
