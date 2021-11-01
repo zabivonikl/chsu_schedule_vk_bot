@@ -1,50 +1,19 @@
-from json import loads
-
-from requests import get
-
-
-class SiteSchedule:
+class ScheduleParser:
     def __init__(self):
-        self.url = 'https://www.chsu.ru/raspisanie' \
-                   '?p_p_id=TimeTable_WAR_TimeTableportlet' \
-                   '&p_p_lifecycle=2&p_p_state=normal' \
-                   '&p_p_mode=view' \
-                   '&p_p_cacheability=cacheLevelPage' \
-                   '&p_p_col_id=column-1' \
-                   '&p_p_col_count=1'
-        self.params = {
-            "_TimeTable_WAR_TimeTableportlet_cmd": "timeTable",
-            "_TimeTable_WAR_TimeTableportlet_typeTimeTable": "period"
-        }
-
-    def get_schedule_string_array(self, request_parameters):
-        self.__set_request_params(request_parameters)
-        self.__get_response_json()
-        self.__parse_json(request_parameters["id_type"])
-        return self.__response or self.__get_empty_response()
-
-    def __set_request_params(self, request_parameters):
-        self.params = {
-            **self.params,
-            "_TimeTable_WAR_TimeTableportlet_group": request_parameters["university_id"],
-            "_TimeTable_WAR_TimeTableportlet_type": request_parameters["id_type"],
-            "_TimeTable_WAR_TimeTableportlet_startDate": request_parameters["start_date"],
-            "_TimeTable_WAR_TimeTableportlet_endDate": request_parameters["last_date"] or request_parameters[
-                "start_date"],
-            "_TimeTable_WAR_TimeTableportlet_professor": request_parameters["university_id"]
-        }
-
-    def __get_response_json(self):
-        resp = get(self.url, params=self.params)
-        self.__response_json = loads(resp.text)
-
-    def __parse_json(self, id_type):
         self.__response = []
-        self.__current_date = ""
         self.__lesson = {}
+        self.__current_date = ""
+        self.__response_json = None
+
+    def parse_json(self, id_type, json=None):
+        self.__response_json = json or self.__response_json
+        self.__response = []
+        self.__lesson = {}
+        self.__current_date = ""
         for self.__lesson in self.__response_json:
             self.__split_if_another_day()
             self.__add_lesson_to_string(id_type)
+        return self.__response or self.__get_empty_response()
 
     def __split_if_another_day(self):
         if not self.__is_current_date():

@@ -1,19 +1,23 @@
 from datetime import datetime, timedelta
 from re import match
 
-from MembersDataAndUniversityIds.id_lists import GROUPS, PROFESSORS
-from ScheduleSources.site_schedule import SiteSchedule
+from ScheduleSources.chsu_api import ChsuApi
+from ScheduleSources.site_schedule import ScheduleParser
 
 
 class EventHandler:
     def __init__(self, api, database):
         self.__chat_platform = api
         self.__database = database
-        self.__schedule = SiteSchedule()
+        self.__schedule = ScheduleParser()
+        self.__chsu_api = ChsuApi()
 
         self.__standard_kb = api.get_standard_keyboard()
         self.__start_keyboard = api.get_start_keyboard()
         self.__empty_kb = api.get_empty_keyboard()
+
+        self.__professors = self.__chsu_api.get_professors_list()
+        self.__groups = self.__chsu_api.get_groups_list()
 
     def handle_event(self, event_obj):
         from_id = event_obj['from_id']
@@ -27,7 +31,7 @@ class EventHandler:
             self.__chat_platform.send_message(f"Введите ФИО", [from_id], self.__empty_kb)
         elif text == 'Студент':
             self.__chat_platform.send_message(f"Введите номер группы", [from_id], self.__empty_kb)
-        elif text in GROUPS or text in PROFESSORS:
+        elif text in self.__groups or text in self.__professors:
             self.__set_university_id(text, from_id)
         elif text == "Расписание на сегодня":
             resp = self.__get_schedule(from_id, f"{datetime.now().strftime('%d.%m.%Y')}")
@@ -55,16 +59,16 @@ class EventHandler:
         self.__chat_platform.send_message(f"Сообщение отправлено", [from_id], self.__standard_kb)
 
     def __set_university_id(self, university_id, from_id):
-        if university_id in PROFESSORS:
+        if university_id in self.__professors:
             self.__database.set_user_data(
                 from_id,
-                PROFESSORS[university_id],
+                self.__professors[university_id],
                 "professor",
                 self.__chat_platform.get_api_name())
-        elif university_id in GROUPS:
+        elif university_id in self.__groups:
             self.__database.set_user_data(
                 from_id,
-                GROUPS[university_id],
+                self.__groups[university_id],
                 "student",
                 self.__chat_platform.get_api_name()
             )
@@ -90,14 +94,14 @@ class EventHandler:
 
     def __get_schedule(self, from_id, start_date, last_date=None):
         db_response = self.__database.get_user_data(from_id, self.__chat_platform.get_api_name())
-        params = {
-            "university_id": db_response["university_id"],
-            "id_type": db_response["id_type"],
-            "start_date": start_date,
-            "last_date": last_date
-        }
         try:
-            response = self.__schedule.get_schedule_string_array(params)
+            response = self.__chsu_api.get_schedule(
+                university_id=db_response["university_id"],
+                id_type=db_response["id_type"],
+                start_date=start_date,
+                last_date=last_date
+            )
+            response = self.__schedule.parse_json(db_response["id_type"], response)
             return response
         except:
             return ['Что-то пошло не так. Вероятно, не работает сайт ЧГУ.']
