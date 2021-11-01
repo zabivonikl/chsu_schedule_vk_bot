@@ -13,7 +13,7 @@ class ScheduleParser:
         for self.__lesson in self.__response_json:
             self.__split_if_another_day()
             self.__add_lesson_to_string(id_type)
-        return self.__response or self.__get_empty_response()
+        return self.__response
 
     def __split_if_another_day(self):
         if not self.__is_current_date():
@@ -59,5 +59,5 @@ class ScheduleParser:
         return f"{self.__lesson['build']['title']}, аудитория {self.__lesson['auditory']['title']}\n"
 
     @staticmethod
-    def __get_empty_response():
+    def get_empty_response():
         return ["На текущий промежуток времени расписание не найдено\n"]

@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from re import match
 
 from ScheduleSources.chsu_api import ChsuApi
-from ScheduleSources.site_schedule import ScheduleParser
+from ScheduleSources.schedule_parser import ScheduleParser
 
 
 class EventHandler:
@@ -101,7 +101,11 @@ class EventHandler:
                 start_date=start_date,
                 last_date=last_date
             )
-            response = self.__schedule.parse_json(db_response["id_type"], response)
-            return response
-        except:
+            if response:
+                response = self.__schedule.parse_json(db_response["id_type"], response)
+                return response
+            else:
+                return self.__schedule.get_empty_response()
+        except Exception as err:
+            print(err)
             return ['Что-то пошло не так. Вероятно, не работает сайт ЧГУ.']
