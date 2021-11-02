@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from threading import Thread
 from time import sleep
 
@@ -10,9 +10,8 @@ from tokens import TELEGRAM_API
 
 
 def send_schedule():
-    start_time = int(datetime.now().strftime("%H%M"))
-    end_time = int((datetime.now() + timedelta(minutes=15)).strftime("%H%M"))
-    users = database.get_mailing_subscribers_by_time(start_time, end_time)
+    time = int(datetime.now().strftime("%H%M"))
+    users = database.get_mailing_subscribers_by_time(time)
     for user in users:
         if user[1] == telegram_api.get_api_name():
             handle_telegram_event({
@@ -30,7 +29,7 @@ def start_mailing():
     while True:
         try:
             send_schedule()
-            sleep(15 * 60)
+            sleep(1 * 60)
         except Exception as err:
             print(err)
 

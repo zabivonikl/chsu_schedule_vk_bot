@@ -30,15 +30,10 @@ class Database:
                 f'''UPDATE ids SET (mailing_time)=({time}) WHERE id={user_id} AND platform="{platform_name}"'''
             )
 
-    def get_mailing_subscribers_by_time(self, start_time, end_time):
-        if end_time < start_time:
-            new_start_time = start_time - 2400
-        else:
-            new_start_time = start_time
+    def get_mailing_subscribers_by_time(self, time):
+        query = f'''SELECT id, platform FROM ids
+                    WHERE mailing_time={time}'''
         with connect(self.__path) as conn:
             curs = conn.cursor()
-            curs.execute(
-                f'''SELECT id, platform FROM ids
-                 WHERE mailing_time BETWEEN {new_start_time} AND {end_time}'''
-            )
+            curs.execute(query)
             return curs.fetchall()
