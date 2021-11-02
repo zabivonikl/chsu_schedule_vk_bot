@@ -1,6 +1,6 @@
-import json
-
 import requests
+
+from TelegramBot.telegram_keyboard import TelegramKeyboard
 
 
 class Telegram:
@@ -28,35 +28,23 @@ class Telegram:
 
     @staticmethod
     def get_standard_keyboard():
-        keyboard = {
-            'resize_keyboard': True,
-            'one_time_keyboard': True,
-            'keyboard': [
-                [
-                    {'text': 'Расписание на сегодня'},
-                    {'text': 'Расписание на завтра'}
-                ], [
-                    {'text': 'Расписание на другой день'}
-                ], [
-                    {'text': 'Изменить группу'}
-                ]],
-            'selective': False
-        }
-        return json.dumps(keyboard)
+        kb = TelegramKeyboard()
+        kb.add_line()
+        kb.add_button("Расписание на сегодня")
+        kb.add_button("Расписание на завтра")
+        kb.add_line()
+        kb.add_button("Расписание на другой день")
+        kb.add_line()
+        kb.add_button("Изменить группу")
+        return kb.get_keyboard()
 
     @staticmethod
     def get_start_keyboard():
-        keyboard = {
-            'resize_keyboard': True,
-            'one_time_keyboard': True,
-            'keyboard': [
-                [
-                    {'text': 'Студент'},
-                    {'text': 'Преподаватель'}
-                ]],
-            'selective': False
-        }
-        return json.dumps(keyboard)
+        kb = TelegramKeyboard()
+        kb.add_line()
+        kb.add_button("Студент")
+        kb.add_button("Преподаватель")
+        return kb.get_keyboard()
 
     @staticmethod
     def get_empty_keyboard():
