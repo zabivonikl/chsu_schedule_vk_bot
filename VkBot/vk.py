@@ -34,6 +34,10 @@ class Vk:
         )
         default_kb.add_line()
         default_kb.add_button(
+            label="Рассылка",
+            color="positive"
+        )
+        default_kb.add_button(
             label="Изменить группу",
             color="negative"
         )

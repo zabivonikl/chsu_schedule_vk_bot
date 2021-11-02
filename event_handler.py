@@ -129,12 +129,12 @@ class EventHandler:
         self.__database.update_mailing_time(from_id, self.__chat_platform.get_api_name(), f"{time}")
         self.__chat_platform.send_message(
             f"Вы подписались на рассылку расписания."
-            f" Теперь, ежедневно в {time}, вы будете получать расписание на следующий день.",
+            f" Теперь, ежедневно в {time[0:2] + ':' + time[2:4]}, вы будете получать расписание на следующий день.",
             [from_id],
             self.__standard_kb
         )
 
     def __send_mailing_info(self, from_id):
         self.__chat_platform.send_message(
-            "Введите время рассылки\nПример: 20:35\n\nДля отписки напишите \"Отписаться\" (соблюдая регистр).",
+            "Введите время рассылки\nПример: 08:35\n\nДля отписки напишите \"Отписаться\" (соблюдая регистр).",
             [from_id], self.__empty_kb)

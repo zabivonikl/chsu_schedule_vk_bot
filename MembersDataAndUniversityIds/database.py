@@ -31,10 +31,14 @@ class Database:
             )
 
     def get_mailing_subscribers_by_time(self, start_time, end_time):
+        if end_time < start_time:
+            new_start_time = start_time - 2400
+        else:
+            new_start_time = start_time
         with connect(self.__path) as conn:
             curs = conn.cursor()
             curs.execute(
-                f'''SELECT id, chsu_id, id_type FROM ids
-                 WHERE mailing_time BETWEEN {start_time} AND {end_time}'''
+                f'''SELECT id, platform FROM ids
+                 WHERE mailing_time BETWEEN {new_start_time} AND {end_time}'''
             )
             return curs.fetchall()

@@ -35,6 +35,7 @@ class Telegram:
         kb.add_line()
         kb.add_button("Расписание на другой день")
         kb.add_line()
+        kb.add_button("Рассылка")
         kb.add_button("Изменить группу")
         return kb.get_keyboard()
 

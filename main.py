@@ -1,10 +1,38 @@
+from datetime import datetime, timedelta
 from threading import Thread
+from time import sleep
 
 import TelegramBot.telegram
 from MembersDataAndUniversityIds.database import Database
 from VkBot.vk import Vk
 from event_handler import EventHandler
 from tokens import TELEGRAM_API
+
+
+def send_schedule():
+    start_time = int(datetime.now().strftime("%H%M"))
+    end_time = int((datetime.now() + timedelta(minutes=15)).strftime("%H%M"))
+    users = database.get_mailing_subscribers_by_time(start_time, end_time)
+    for user in users:
+        if user[1] == telegram_api.get_api_name():
+            handle_telegram_event({
+                "from_id": user[0],
+                "text": "Расписание на завтра"
+            })
+        elif user[1] == vk_api.get_api_name():
+            handle_vk_event({
+                "from_id": user[0],
+                "text": "Расписание на завтра"
+            })
+
+
+def start_mailing():
+    while True:
+        try:
+            send_schedule()
+            sleep(15 * 60)
+        except Exception as err:
+            print(err)
 
 
 def handle_vk_event(event_obj):
@@ -40,8 +68,10 @@ if __name__ == "__main__":
     try:
         vk_bot = Thread(target=listen_vk_server)
         tg_bot = Thread(target=listen_telegram_server)
+        mailing = Thread(target=start_mailing)
 
         vk_bot.start()
         tg_bot.start()
+        mailing.start()
     except Exception as e:
         print(e)
