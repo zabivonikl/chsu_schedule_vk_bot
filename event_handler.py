@@ -70,13 +70,16 @@ class EventHandler:
                 from_id,
                 self.__professors[university_id],
                 "professor",
-                self.__chat_platform.get_api_name())
+                self.__chat_platform.get_api_name(),
+                group_name=university_id
+            )
         elif university_id in self.__groups:
             self.__database.set_user_data(
                 from_id,
                 self.__groups[university_id],
                 "student",
-                self.__chat_platform.get_api_name()
+                self.__chat_platform.get_api_name(),
+                group_name=university_id
             )
         self.__chat_platform.send_message("Данные сохранены\n", [from_id], self.__standard_kb)
 
@@ -102,7 +105,7 @@ class EventHandler:
         db_response = self.__database.get_user_data(from_id, self.__chat_platform.get_api_name())
         try:
             response = self.__chsu_api.get_schedule(
-                university_id=db_response["university_id"],
+                university_id=int(db_response["university_id"]),
                 id_type=db_response["id_type"],
                 start_date=start_date,
                 last_date=last_date
