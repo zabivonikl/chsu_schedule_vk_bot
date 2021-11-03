@@ -59,7 +59,6 @@ def listen_telegram_server():
         tg_event_handling.start()
 
 
-# TODO сделать рассылку
 if __name__ == "__main__":
     database = Database()
     vk_api = Vk()
@@ -69,8 +68,12 @@ if __name__ == "__main__":
         tg_bot = Thread(target=listen_telegram_server)
         mailing = Thread(target=start_mailing)
 
+        print("Starting vk-bot...")
         vk_bot.start()
+        print("Starting telegram-bot...")
         tg_bot.start()
+        print("Starting mailing...")
         mailing.start()
+        print("Done!")
     except Exception as e:
         print(e)
