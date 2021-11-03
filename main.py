@@ -3,14 +3,14 @@ from threading import Thread
 from time import sleep
 
 import TelegramBot.telegram
-from MembersDataAndUniversityIds.database import Database
+from MembersDataAndUniversityIds.MongoDB import MongoDB
 from VkBot.vk import Vk
 from event_handler import EventHandler
 from tokens import TELEGRAM_API
 
 
 def send_schedule():
-    time = int(datetime.now().strftime("%H%M"))
+    time = datetime.now().strftime("%H:%M")
     users = database.get_mailing_subscribers_by_time(time)
     for user in users:
         if user[1] == telegram_api.get_api_name():
@@ -60,7 +60,7 @@ def listen_telegram_server():
 
 
 if __name__ == "__main__":
-    database = Database()
+    database = MongoDB()
     vk_api = Vk()
     telegram_api = TelegramBot.telegram.Telegram(TELEGRAM_API)
     try:

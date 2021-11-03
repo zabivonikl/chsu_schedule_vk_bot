@@ -125,11 +125,10 @@ class EventHandler:
         )
 
     def __set_mailing_time(self, from_id, text):
-        time = text.replace(":", "") if int(text.split(":")[0]) < 24 else "0900"
-        self.__database.update_mailing_time(from_id, self.__chat_platform.get_api_name(), f"{time}")
+        self.__database.update_mailing_time(from_id, self.__chat_platform.get_api_name(), text)
         self.__chat_platform.send_message(
             f"Вы подписались на рассылку расписания."
-            f" Теперь, ежедневно в {time[0:2] + ':' + time[2:4]}, вы будете получать расписание на следующий день.",
+            f" Теперь, ежедневно в {text}, вы будете получать расписание на следующий день.",
             [from_id],
             self.__standard_kb
         )
