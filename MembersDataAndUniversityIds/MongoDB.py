@@ -1,21 +1,20 @@
-import pymongo as pymongo
+from pymongo import MongoClient
 
 from tokens import MONGO_DB_LOGIN, MONGO_DB_PASSWORD, MONGO_DB_NAME
 
 
 class MongoDB:
     def __init__(self):
-        self.__users_collection = pymongo.MongoClient(
-            f"mongodb://{MONGO_DB_LOGIN}:{MONGO_DB_PASSWORD}@cluster-shard-00-00.rfoam.mongodb.net:27017,"
-            f"cluster-shard-00-01.rfoam.mongodb.net:27017,"
-            f"cluster-shard-00-02.rfoam.mongodb.net:27017/{MONGO_DB_NAME}?"
-            f"ssl=true&"
-            f"replicaSet=atlas-vnkwp2-shard-0&"
-            f"authSource=admin&"
+        self.__client = MongoClient(
+            f"mongodb+srv://{MONGO_DB_LOGIN}:{MONGO_DB_PASSWORD}"
+            f"@cluster.rfoam.mongodb.net/"
+            f"{MONGO_DB_NAME}?"
             f"retryWrites=true&"
-            f"w=majority"
-        )[MONGO_DB_NAME]["Users"]
-        print(self.__users_collection.count())
+            f"w=majority",
+            port=27017,
+        )
+        print(self.__client.server_info())
+        self.__users_collection = self.__client[MONGO_DB_NAME]["Users"]
 
     def get_user_data(self, platform_id, api_name):
         bot_user = self.__users_collection.find_one({"id": platform_id, "platform": api_name})

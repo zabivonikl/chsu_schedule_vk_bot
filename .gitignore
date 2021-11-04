@@ -131,6 +131,4 @@ dmypy.json
 
 tokens.py
 /.idea
-MembersDataAndUniversityIds/users.db
 .bash_history
-Dockerfile
