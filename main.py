@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from threading import Thread
 from time import sleep
 
@@ -10,7 +10,7 @@ from tokens import TELEGRAM_API
 
 
 def send_schedule():
-    time = datetime.now().strftime("%H:%M")
+    time = datetime.now(timezone(timedelta(hours=3.0))).strftime("%H:%M")
     users = database.get_mailing_subscribers_by_time(time)
     for user in users:
         if user[1] == telegram_api.get_api_name():
