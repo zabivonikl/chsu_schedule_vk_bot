@@ -64,9 +64,9 @@ if __name__ == "__main__":
     vk_api = Vk()
     telegram_api = TelegramBot.telegram.Telegram(TELEGRAM_API)
     try:
-        vk_bot = Thread(target=listen_vk_server)
-        tg_bot = Thread(target=listen_telegram_server)
-        mailing = Thread(target=start_mailing)
+        vk_bot = Thread(target=listen_vk_server, name="VKBotProcess")
+        tg_bot = Thread(target=listen_telegram_server, name="TelegramBotProcess")
+        mailing = Thread(target=start_mailing, name="MailingProcess")
 
         print("Starting vk-bot...")
         vk_bot.start()

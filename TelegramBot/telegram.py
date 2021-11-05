@@ -9,6 +9,7 @@ class Telegram:
         self.__check_connection()
         self.__last_update = ""
         self.__event = None
+        self.__init_last_update()
 
     def __check_connection(self):
         me_info = self.get_me()
@@ -54,9 +55,7 @@ class Telegram:
     def listen_server(self):
         while True:
             self.__get_event()
-            if self.__is_last_update_empty():
-                self.__init_last_update()
-            elif self.__is_new_last_id():
+            if self.__is_new_last_id():
                 return self.__update_last_id_and_get_event()
 
     def __get_event(self):
@@ -65,10 +64,8 @@ class Telegram:
     def __call_method(self, method_name, params=None):
         return requests.get(self.__bot_link + method_name, params=params).json()
 
-    def __is_last_update_empty(self):
-        return self.__last_update == ""
-
     def __init_last_update(self):
+        self.__get_event()
         self.__last_update = self.__event['result'][len(self.__event['result']) - 1]['update_id']
 
     def __is_new_last_id(self):
