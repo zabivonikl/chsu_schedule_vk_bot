@@ -1,15 +1,16 @@
 class ScheduleParser:
     def __init__(self):
-        self.__response = []
-        self.__lesson = {}
-        self.__current_date = ""
+        self.__nullify_fields()
         self.__response_json = None
 
-    def parse_json(self, id_type, json=None):
-        self.__response_json = json or self.__response_json
+    def __nullify_fields(self):
         self.__response = []
         self.__lesson = {}
         self.__current_date = ""
+
+    def parse_json(self, id_type, json):
+        self.__response_json = json
+        self.__nullify_fields()
         for self.__lesson in self.__response_json:
             self.__split_if_another_day()
             self.__add_lesson_to_string(id_type)

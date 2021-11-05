@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 from re import match
 
-from ScheduleSources.chsu_api import ChsuApi
-from ScheduleSources.schedule_parser import ScheduleParser
+from APIs.ChsuAPI.chsu import ChsuApi
+from DataHandlers.schedule_parser import ScheduleParser
 
 
 class EventHandler:

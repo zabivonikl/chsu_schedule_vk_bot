@@ -2,10 +2,10 @@ from datetime import datetime, timezone, timedelta
 from threading import Thread
 from time import sleep
 
-import TelegramBot.telegram
-from MembersDataAndUniversityIds.MongoDB import MongoDB
-from VkBot.vk import Vk
-from event_handler import EventHandler
+from APIs.MongoDbAPI.MongoDB import MongoDB
+from APIs.TelegramAPI.telegram import Telegram
+from APIs.VkAPI.vk import Vk
+from DataHandlers.event_handler import EventHandler
 from tokens import TELEGRAM_API
 
 
@@ -62,7 +62,7 @@ def listen_telegram_server():
 if __name__ == "__main__":
     database = MongoDB()
     vk_api = Vk()
-    telegram_api = TelegramBot.telegram.Telegram(TELEGRAM_API)
+    telegram_api = Telegram(TELEGRAM_API)
     try:
         vk_bot = Thread(target=listen_vk_server, name="VKBotProcess")
         tg_bot = Thread(target=listen_telegram_server, name="TelegramBotProcess")

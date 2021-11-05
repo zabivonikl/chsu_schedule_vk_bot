@@ -1,6 +1,6 @@
 import requests
 
-from TelegramBot.telegram_keyboard import TelegramKeyboard
+from APIs.TelegramAPI.telegram_keyboard import TelegramKeyboard
 
 
 class Telegram:
