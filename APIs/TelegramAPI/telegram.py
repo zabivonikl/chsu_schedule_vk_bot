@@ -1,3 +1,5 @@
+from time import sleep
+
 import requests
 
 from APIs.TelegramAPI.telegram_keyboard import TelegramKeyboard
@@ -62,7 +64,11 @@ class Telegram:
         self.__event = self.__call_method("getUpdates", {"offset": self.__last_update})
 
     def __call_method(self, method_name, params=None):
-        return requests.get(self.__bot_link + method_name, params=params).json()
+        try:
+            return requests.get(self.__bot_link + method_name, params=params).json()
+        except Exception as e:
+            print(e)
+            sleep(5)
 
     def __init_last_update(self):
         self.__get_event()
@@ -74,10 +80,11 @@ class Telegram:
     def __update_last_id_and_get_event(self):
         self.__last_update = self.__event['result'][len(self.__event['result']) - 1]['update_id']
         last_event = self.__event['result'][len(self.__event['result']) - 1]
-        return {
-            "from_id": last_event['message']['from']['id'],
-            "text": last_event['message']['text']
-        }
+        if 'text' in last_event['message']:
+            return {
+                "from_id": last_event['message']['from']['id'],
+                "text": last_event['message']['text']
+            }
 
     def send_message_queue(self, queue, peer_ids, keyboard):
         for element in queue:
