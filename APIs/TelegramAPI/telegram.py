@@ -75,16 +75,20 @@ class Telegram:
         self.__last_update = self.__event['result'][len(self.__event['result']) - 1]['update_id']
 
     def __is_new_last_id(self):
-        return self.__last_update != self.__event['result'][len(self.__event['result']) - 1]['update_id']
+        if 'result' in self.__event:
+            return self.__last_update != self.__event['result'][len(self.__event['result']) - 1]['update_id']
+        else:
+            return False
 
     def __update_last_id_and_get_event(self):
         self.__last_update = self.__event['result'][len(self.__event['result']) - 1]['update_id']
         last_event = self.__event['result'][len(self.__event['result']) - 1]
-        if 'text' in last_event['message']:
-            return {
-                "from_id": last_event['message']['from']['id'],
-                "text": last_event['message']['text']
-            }
+        if 'message' in last_event:
+            if 'text' in last_event['message']:
+                return {
+                    "from_id": last_event['message']['from']['id'],
+                    "text": last_event['message']['text']
+                }
 
     def send_message_queue(self, queue, peer_ids, keyboard):
         for element in queue:
