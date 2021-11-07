@@ -108,7 +108,7 @@ class EventHandler:
 
     def __get_schedule(self, from_id, start_date, last_date=None):
         db_response = self.__database.get_user_data(from_id, self.__chat_platform.get_api_name())
-        if db_response["group_name"]:
+        if db_response["group_name"] is not None:
             response = self.__chsu_api.get_schedule(
                 university_id=int(self.__id_by_groups[db_response["group_name"]]),
                 start_date=start_date,
@@ -121,7 +121,7 @@ class EventHandler:
                 return self.__schedule.get_empty_response()
         elif db_response["professor_name"]:
             response = self.__chsu_api.get_schedule(
-                university_id=int(self.__id_by_groups[db_response["professor_name"]]),
+                university_id=int(self.__id_by_professors[db_response["professor_name"]]),
                 start_date=start_date,
                 last_date=last_date
             )

@@ -13,7 +13,6 @@ class MongoDB:
             f"w=majority",
             port=27017,
         )
-        print(self.__client.server_info())
         self.__users_collection = self.__client[MONGO_DB_NAME]["Users"]
 
     def get_user_data(self, platform_id, api_name):
