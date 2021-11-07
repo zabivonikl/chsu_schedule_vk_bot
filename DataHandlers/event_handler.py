@@ -17,8 +17,8 @@ class EventHandler:
         self.__empty_kb = self.__chat_platform.get_empty_keyboard()
         self.__canceling_kb = self.__chat_platform.get_canceling_keyboard()
 
-        self.__professors = self.__chsu_api.get_professors_list()
-        self.__groups = self.__chsu_api.get_groups_list()
+        self.__id_by_professors = self.__chsu_api.get_id_by_professors_list()
+        self.__id_by_groups = self.__chsu_api.get_id_by_groups_list()
 
     def handle_event(self, event_obj):
         from_id = event_obj['from_id']
@@ -32,8 +32,8 @@ class EventHandler:
             self.__chat_platform.send_message(f"Введите ФИО", [from_id], self.__empty_kb)
         elif text == 'Студент':
             self.__chat_platform.send_message(f"Введите номер группы", [from_id], self.__empty_kb)
-        elif text in self.__groups or text in self.__professors:
-            self.__set_university_id(text, from_id)
+        elif text in self.__id_by_groups or text in self.__id_by_professors:
+            self.__set_user_data(text, from_id)
         elif text == "Расписание на сегодня":
             resp = self.__get_schedule(from_id, f"{datetime.now().strftime('%d.%m.%Y')}")
             self.__chat_platform.send_message_queue(resp, [from_id], self.__standard_kb)
@@ -71,20 +71,18 @@ class EventHandler:
             self.__chat_platform.get_admins(), self.__standard_kb)
         self.__chat_platform.send_message(f"Сообщение отправлено", [from_id], self.__standard_kb)
 
-    def __set_university_id(self, university_id, from_id):
-        if university_id in self.__professors:
+    def __set_user_data(self, university_id, from_id):
+        if university_id in self.__id_by_professors:
             self.__database.set_user_data(
                 from_id,
-                self.__professors[university_id],
-                "professor",
+                self.__id_by_professors[university_id],
                 self.__chat_platform.get_api_name(),
-                group_name=university_id
+                professor_name=university_id
             )
-        elif university_id in self.__groups:
+        elif university_id in self.__id_by_groups:
             self.__database.set_user_data(
                 from_id,
-                self.__groups[university_id],
-                "student",
+                self.__id_by_groups[university_id],
                 self.__chat_platform.get_api_name(),
                 group_name=university_id
             )
@@ -110,21 +108,28 @@ class EventHandler:
 
     def __get_schedule(self, from_id, start_date, last_date=None):
         db_response = self.__database.get_user_data(from_id, self.__chat_platform.get_api_name())
-        try:
+        if db_response["group_name"]:
             response = self.__chsu_api.get_schedule(
-                university_id=int(db_response["university_id"]),
-                id_type=db_response["id_type"],
+                university_id=int(self.__id_by_groups[db_response["group_name"]]),
                 start_date=start_date,
                 last_date=last_date
             )
             if response:
-                response = self.__schedule.parse_json(db_response["id_type"], response)
+                response = self.__schedule.parse_json("student", response)
                 return response
             else:
                 return self.__schedule.get_empty_response()
-        except Exception as err:
-            print(err)
-            return ['Что-то пошло не так. Вероятно, не работает сайт ЧГУ.']
+        elif db_response["professor_name"]:
+            response = self.__chsu_api.get_schedule(
+                university_id=int(self.__id_by_groups[db_response["professor_name"]]),
+                start_date=start_date,
+                last_date=last_date
+            )
+            if response:
+                response = self.__schedule.parse_json("professor", response)
+                return response
+            else:
+                return self.__schedule.get_empty_response()
 
     def __delete_mailing_time(self, from_id):
         self.__database.update_mailing_time(from_id, self.__chat_platform.get_api_name())
