@@ -58,6 +58,15 @@ class Vk:
         return start_kb.get_keyboard()
 
     @staticmethod
+    def get_canceling_keyboard():
+        kb = VkKeyboard(one_time=False, inline=False)
+        kb.add_button(
+            label="Отмена",
+            color="negative"
+        )
+        return kb.get_keyboard()
+
+    @staticmethod
     def get_empty_keyboard():
         return VkKeyboard.get_empty_keyboard()
 

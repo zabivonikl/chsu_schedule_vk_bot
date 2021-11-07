@@ -51,6 +51,13 @@ class Telegram:
         return kb.get_keyboard()
 
     @staticmethod
+    def get_canceling_keyboard():
+        kb = TelegramKeyboard()
+        kb.add_line()
+        kb.add_button("Отмена")
+        return kb.get_keyboard()
+
+    @staticmethod
     def get_empty_keyboard():
         return None
 
