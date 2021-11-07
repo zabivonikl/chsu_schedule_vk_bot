@@ -42,7 +42,10 @@ class EventHandler:
             self.__chat_platform.send_message_queue(resp, [from_id], self.__standard_kb)
         elif text == "Расписание на другой день":
             self.__chat_platform.send_message(
-                "Введите дату\n\nПример:\n28.02\n31.10-07.11",
+                "Введите дату\n"
+                "\n"
+                "Пример: 08.02 - запрос расписания для конкретного дня\n"
+                "31.10-07.11 - запрос расписания для заданного интервала дат",
                 [from_id],
                 self.__canceling_kb
             )
@@ -135,12 +138,15 @@ class EventHandler:
         self.__database.update_mailing_time(from_id, self.__chat_platform.get_api_name(), text)
         self.__chat_platform.send_message(
             f"Вы подписались на рассылку расписания."
-            f" Теперь, ежедневно в {text}, вы будете получать расписание на следующий день.",
+            f" Теперь, ежедневно в {text}, Вы будете получать расписание на следующий день.",
             [from_id],
             self.__standard_kb
         )
 
     def __send_mailing_info(self, from_id):
         self.__chat_platform.send_message(
-            "Введите время рассылки\nПример: 08:35\n\nДля отписки напишите \"Отписаться\" (соблюдая регистр).",
+            "Введите время рассылки\n"
+            "Пример: 08:36\n"
+            "\n"
+            "Для отписки напишите \"Отписаться\" (соблюдая регистр).",
             [from_id], self.__canceling_kb)
