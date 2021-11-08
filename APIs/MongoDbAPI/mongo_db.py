@@ -17,10 +17,13 @@ class MongoDB:
 
     def get_user_data(self, platform_id, api_name):
         bot_user = self.__users_collection.find_one({"id": platform_id, "platform": api_name})
-        return {
-            "group_name": bot_user["group_name"],
-            "professor_name": bot_user["professor_name"]
-        }
+        if bot_user is not None:
+            return {
+                "group_name": bot_user["group_name"],
+                "professor_name": bot_user["professor_name"]
+            }
+        else:
+            return None
 
     def set_user_data(self, user_id, university_id, api_name,
                       group_name=None, mailing_time=None, professor_name=None):

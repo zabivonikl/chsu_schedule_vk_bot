@@ -2,7 +2,7 @@ from datetime import datetime, timezone, timedelta
 from threading import Thread
 from time import sleep
 
-from APIs.MongoDbAPI.MongoDB import MongoDB
+from APIs.MongoDbAPI.mongo_db import MongoDB
 from APIs.TelegramAPI.telegram import Telegram
 from APIs.VkAPI.vk import Vk
 from DataHandlers.event_handler import EventHandler

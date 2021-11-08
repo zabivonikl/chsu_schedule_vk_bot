@@ -108,28 +108,27 @@ class EventHandler:
 
     def __get_schedule(self, from_id, start_date, last_date=None):
         db_response = self.__database.get_user_data(from_id, self.__chat_platform.get_api_name())
+        if db_response is None:
+            return [
+                "Пользователь не найден. "
+                "Пожалуйста, нажмите \"Изменить группу\" и введите номер группы/ФИО преподавателя снова."
+            ]
         if db_response["group_name"] is not None:
             response = self.__chsu_api.get_schedule(
                 university_id=int(self.__id_by_groups[db_response["group_name"]]),
                 start_date=start_date,
                 last_date=last_date
             )
-            if response:
-                response = self.__schedule.parse_json("student", response)
-                return response
-            else:
-                return self.__schedule.get_empty_response()
-        elif db_response["professor_name"]:
+            return self.__schedule.parse_json("student", response) if response \
+                else self.__schedule.get_empty_response()
+        else:
             response = self.__chsu_api.get_schedule(
                 university_id=int(self.__id_by_professors[db_response["professor_name"]]),
                 start_date=start_date,
                 last_date=last_date
             )
-            if response:
-                response = self.__schedule.parse_json("professor", response)
-                return response
-            else:
-                return self.__schedule.get_empty_response()
+            return self.__schedule.parse_json("professor", response) if response \
+                else self.__schedule.get_empty_response()
 
     def __delete_mailing_time(self, from_id):
         self.__database.update_mailing_time(from_id, self.__chat_platform.get_api_name())
