@@ -9,8 +9,7 @@ from DataHandlers.event_handler import EventHandler
 from tokens import TELEGRAM_API
 
 
-def send_schedule():
-    time = datetime.now(timezone(timedelta(hours=3.0))).strftime("%H:%M")
+def send_schedule(time):
     users = database.get_mailing_subscribers_by_time(time)
     for user in users:
         if user[1] == telegram_api.get_api_name():
@@ -27,8 +26,10 @@ def send_schedule():
 
 def start_mailing():
     while True:
+        time = datetime.now(timezone(timedelta(hours=3.0))).strftime("%H:%M")
         try:
-            send_schedule()
+            sending = Thread(target=send_schedule, name=f'Sending at {time}', args=(time,))
+            sending.start()
             sleep(1 * 60)
         except Exception as err:
             print(err)
