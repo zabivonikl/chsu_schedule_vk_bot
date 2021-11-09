@@ -51,15 +51,15 @@ class EventHandler:
             )
         elif text == "Отмена":
             self.__chat_platform.send_message(f"Действие отменено", [from_id], self.__standard_kb)
-        elif match(r'[0-3]\d[.][0-1]\d[-][0-3]\d[.][0-1]\d', text):
+        elif match(r'^(0\d|1\d|2\d|3[0-1])[.](0\d|1[0-2])-(0\d|1\d|2\d|3[0-1]).(0\d|1[0-2])$', text):
             self.__handle_custom_date(from_id, text.split('-')[0], text.split('-')[1])
-        elif match(r'[0-3]\d[.][0-1]\d', text):
+        elif match(r'^(0\d|1\d|2\d|3[0-1])[.](0\d|1[0-2])$', text):
             self.__handle_custom_date(from_id, text)
         elif text == "Рассылка":
             self.__send_mailing_info(from_id)
         elif text == "Отписаться":
             self.__delete_mailing_time(from_id)
-        elif match(r'[0-2]\d[:][0-5]\d', text):
+        elif match(r'^(0\d|1\d|2[0-3])[:][0-5]\d$', text):
             self.__set_mailing_time(from_id, text)
         else:
             self.__chat_platform.send_message("Такой команды нет. Проверьте правильность ввода.", [from_id],
