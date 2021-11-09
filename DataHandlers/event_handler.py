@@ -51,9 +51,9 @@ class EventHandler:
             )
         elif text == "Отмена":
             self.__chat_platform.send_message(f"Действие отменено", [from_id], self.__standard_kb)
-        elif match(r'^(0\d|1\d|2\d|3[0-1])[.](0\d|1[0-2])-(0\d|1\d|2\d|3[0-1]).(0\d|1[0-2])$', text):
+        elif match(r'^(0[1-9]|1\d|2\d|3[0-1])[.](0[1-9]|1[0-2])-(0[1-9]|1\d|2\d|3[0-1]).(0[1-9]|1[0-2])$', text):
             self.__handle_custom_date(from_id, text.split('-')[0], text.split('-')[1])
-        elif match(r'^(0\d|1\d|2\d|3[0-1])[.](0\d|1[0-2])$', text):
+        elif match(r'^(0[1-9]|1\d|2\d|3[0-1])[.](0[1-9]|1[0-2])$', text):
             self.__handle_custom_date(from_id, text)
         elif text == "Рассылка":
             self.__send_mailing_info(from_id)
