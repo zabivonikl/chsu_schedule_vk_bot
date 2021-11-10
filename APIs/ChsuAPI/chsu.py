@@ -1,5 +1,7 @@
 import requests
 
+from APIs.ChsuAPI.chsu_exceptions import InvalidChsuId, InvalidApiKey
+
 
 class ChsuApi:
     def __init__(self):
@@ -10,12 +12,18 @@ class ChsuApi:
         }
 
     def __set_new_token(self):
-        data = {"password": "ds3m#2nn", "username": "mobil"}
-        self.__base_headers["Authorization"] = f'''Bearer {requests.post(
+        data = {
+            "username": "mobil",
+            "password": "ds3m#2nn"
+        }
+        token = requests.post(
             self.__base_url + "/auth/signin",
             json=data,
             headers=self.__base_headers
-        ).json()["data"]}'''
+        ).json()["data"]
+        if token is None:
+            raise InvalidApiKey
+        self.__base_headers["Authorization"] = f'''Bearer {token}'''
 
     def get_id_by_professors_list(self):
         self.__set_new_token()
@@ -62,5 +70,5 @@ class ChsuApi:
         elif university_id in self.get_professors_by_id_list():
             query = f"/timetable/v1/from/{start_date}/to/{last_date or start_date}/lecturerId/{university_id}/"
         else:
-            return None
+            raise InvalidChsuId
         return requests.get(self.__base_url + query, headers=self.__base_headers).json()

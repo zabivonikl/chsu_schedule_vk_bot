@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 from re import match
 
 from APIs.ChsuAPI.chsu import ChsuApi
+from APIs.MongoDbAPI.mongo_db_exceptions import EmptyResponse as MongoDBEmptyRespException
 from DataHandlers.schedule_parser import ScheduleParser
 
 
@@ -49,12 +50,12 @@ class EventHandler:
                 [from_id],
                 self.__canceling_kb
             )
-        elif text == "Отмена":
-            self.__chat_platform.send_message(f"Действие отменено", [from_id], self.__standard_kb)
         elif match(r'^(0[1-9]|1\d|2\d|3[0-1])[.](0[1-9]|1[0-2])-(0[1-9]|1\d|2\d|3[0-1]).(0[1-9]|1[0-2])$', text):
             self.__handle_custom_date(from_id, text.split('-')[0], text.split('-')[1])
         elif match(r'^(0[1-9]|1\d|2\d|3[0-1])[.](0[1-9]|1[0-2])$', text):
             self.__handle_custom_date(from_id, text)
+        elif text == "Отмена":
+            self.__chat_platform.send_message(f"Действие отменено", [from_id], self.__standard_kb)
         elif text == "Рассылка":
             self.__send_mailing_info(from_id)
         elif text == "Отписаться":
@@ -107,28 +108,29 @@ class EventHandler:
         return [start_date, end_date]
 
     def __get_schedule(self, from_id, start_date, last_date=None):
-        db_response = self.__database.get_user_data(from_id, self.__chat_platform.get_api_name())
-        if db_response is None:
+        try:
+            db_response = self.__database.get_user_data(from_id, self.__chat_platform.get_api_name())
+            if db_response["group_name"]:
+                response = self.__chsu_api.get_schedule(
+                    university_id=int(self.__id_by_groups[db_response["group_name"]]),
+                    start_date=start_date,
+                    last_date=last_date
+                )
+                return self.__schedule.parse_json("student", response) if response \
+                    else self.__schedule.get_empty_response()
+            else:
+                response = self.__chsu_api.get_schedule(
+                    university_id=int(self.__id_by_professors[db_response["professor_name"]]),
+                    start_date=start_date,
+                    last_date=last_date
+                )
+                return self.__schedule.parse_json("professor", response) if response \
+                    else self.__schedule.get_empty_response()
+        except MongoDBEmptyRespException:
             return [
                 "Пользователь не найден. "
                 "Пожалуйста, нажмите \"Изменить группу\" и введите номер группы/ФИО преподавателя снова."
             ]
-        if db_response["group_name"] is not None:
-            response = self.__chsu_api.get_schedule(
-                university_id=int(self.__id_by_groups[db_response["group_name"]]),
-                start_date=start_date,
-                last_date=last_date
-            )
-            return self.__schedule.parse_json("student", response) if response \
-                else self.__schedule.get_empty_response()
-        else:
-            response = self.__chsu_api.get_schedule(
-                university_id=int(self.__id_by_professors[db_response["professor_name"]]),
-                start_date=start_date,
-                last_date=last_date
-            )
-            return self.__schedule.parse_json("professor", response) if response \
-                else self.__schedule.get_empty_response()
 
     def __delete_mailing_time(self, from_id):
         self.__database.update_mailing_time(from_id, self.__chat_platform.get_api_name())

@@ -36,7 +36,10 @@ def start_mailing():
 
 
 def handle_vk_event(event_obj):
-    EventHandler(vk_api, database).handle_event(event_obj)
+    try:
+        EventHandler(vk_api, database).handle_event(event_obj)
+    except Exception as err:
+        print(err)
 
 
 def listen_vk_server():
@@ -50,7 +53,10 @@ def listen_vk_server():
 
 
 def handle_telegram_event(event_obj):
-    EventHandler(telegram_api, database).handle_event(event_obj)
+    try:
+        EventHandler(telegram_api, database).handle_event(event_obj)
+    except Exception as err:
+        print(err)
 
 
 def listen_telegram_server():
@@ -64,11 +70,11 @@ if __name__ == "__main__":
     database = MongoDB()
     vk_api = Vk()
     telegram_api = Telegram(TELEGRAM_API)
-    try:
-        vk_bot = Thread(target=listen_vk_server, name="VKBotProcess")
-        tg_bot = Thread(target=listen_telegram_server, name="TelegramBotProcess")
-        mailing = Thread(target=start_mailing, name="MailingProcess")
+    vk_bot = Thread(target=listen_vk_server, name="VKBotProcess")
+    tg_bot = Thread(target=listen_telegram_server, name="TelegramBotProcess")
+    mailing = Thread(target=start_mailing, name="MailingProcess")
 
+    try:
         print("Starting vk-bot...")
         vk_bot.start()
         print("Starting telegram-bot...")

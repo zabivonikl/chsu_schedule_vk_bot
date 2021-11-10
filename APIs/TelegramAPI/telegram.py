@@ -63,6 +63,7 @@ class Telegram:
 
     def listen_server(self):
         while True:
+            self.get_me()
             self.__get_event()
             if self.__is_new_last_id():
                 return self.__update_last_id_and_get_event()
