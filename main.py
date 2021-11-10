@@ -70,11 +70,12 @@ if __name__ == "__main__":
     database = MongoDB()
     vk_api = Vk()
     telegram_api = Telegram(TELEGRAM_API)
-    vk_bot = Thread(target=listen_vk_server, name="VKBotProcess")
-    tg_bot = Thread(target=listen_telegram_server, name="TelegramBotProcess")
-    mailing = Thread(target=start_mailing, name="MailingProcess")
 
     try:
+        vk_bot = Thread(target=listen_vk_server, name="VKBotProcess")
+        tg_bot = Thread(target=listen_telegram_server, name="TelegramBotProcess")
+        mailing = Thread(target=start_mailing, name="MailingProcess")
+
         print("Starting vk-bot...")
         vk_bot.start()
         print("Starting telegram-bot...")
