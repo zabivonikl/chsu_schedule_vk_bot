@@ -76,14 +76,12 @@ class EventHandler:
         if university_id in self.__id_by_professors:
             self.__database.set_user_data(
                 from_id,
-                self.__id_by_professors[university_id],
                 self.__chat_platform.get_api_name(),
                 professor_name=university_id
             )
         elif university_id in self.__id_by_groups:
             self.__database.set_user_data(
                 from_id,
-                self.__id_by_groups[university_id],
                 self.__chat_platform.get_api_name(),
                 group_name=university_id
             )

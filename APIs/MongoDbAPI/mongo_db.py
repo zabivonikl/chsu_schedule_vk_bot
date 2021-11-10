@@ -25,12 +25,11 @@ class MongoDB:
             "professor_name": bot_user["professor_name"]
         }
 
-    def set_user_data(self, user_id, university_id, api_name,
+    def set_user_data(self, user_id, api_name,
                       group_name=None, mailing_time=None, professor_name=None):
         self.__users_collection.find_one_and_delete({"id": user_id, "platform": api_name})
         self.__users_collection.insert_one({
             "id": user_id,
-            "university_id": university_id,
             "platform": api_name,
             "mailing_time": mailing_time,
             "group_name": group_name,
