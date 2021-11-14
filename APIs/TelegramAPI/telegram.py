@@ -83,10 +83,11 @@ class Telegram:
         self.__last_update = self.__event['result'][len(self.__event['result']) - 1]['update_id']
 
     def __is_new_last_id(self):
-        if 'result' in self.__event:
-            return self.__last_update != self.__event['result'][len(self.__event['result']) - 1]['update_id']
-        else:
-            return False
+        if self.__event is not None:
+            if 'result' in self.__event:
+                return self.__last_update != self.__event['result'][len(self.__event['result']) - 1]['update_id']
+            else:
+                return False
 
     def __update_last_id_and_get_event(self):
         self.__last_update = self.__event['result'][len(self.__event['result']) - 1]['update_id']
